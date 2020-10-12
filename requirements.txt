@@ -1,0 +1,7 @@
+Django==2.2.14
+djangorestframework==3.11.0
+gunicorn==19.9.0
+django-extensions==2.2.8
+virtualenv==20.0.23
+django-cors-headers==3.3.0
+requests==2.21.0
