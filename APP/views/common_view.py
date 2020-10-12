@@ -35,7 +35,7 @@ class Home(APIView):
         if not is_valid['status']:
             return Response(is_valid, status=bad_request)
 
-        key, temp, outputs, output_length, output_total = int(key), [], [], len(list_data), 0
+        key, temp, outputs, output_length, output_total, flag = int(key), [], [], len(list_data), 0, 0
         for d in list_data:
             if d >= key:
                 temp = []
@@ -56,6 +56,9 @@ class Home(APIView):
                     outputs = temp.copy()
                     temp = []
                     output_total = 0
+
+        if not outputs:
+            return Response({'status': False, 'detail': 'SUB ARRAY NOT AVAILABLE'}, status=not_found)
 
         new = {
             'testdata': str(list_data),
