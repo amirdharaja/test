@@ -4,12 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.status import (
     HTTP_200_OK as ok,
     HTTP_201_CREATED as created,
-    HTTP_202_ACCEPTED as accepted,
     HTTP_400_BAD_REQUEST as bad_request,
-    HTTP_401_UNAUTHORIZED as un_authorized,
-    HTTP_403_FORBIDDEN as forbidden,
     HTTP_404_NOT_FOUND as not_found,
-    HTTP_405_METHOD_NOT_ALLOWED as method_not_allowed,
 )
 
 from APP.helpers import validate
@@ -35,7 +31,7 @@ class Home(APIView):
         if not is_valid['status']:
             return Response(is_valid, status=bad_request)
 
-        key, temp, outputs, output_length, output_total, flag = int(key), [], [], len(list_data), 0, 0
+        key, temp, outputs, output_length, output_total = int(key), [], [], len(list_data), 0
         for d in list_data:
             if d >= key:
                 temp = []
@@ -47,7 +43,7 @@ class Home(APIView):
                 serializer = TestSerializer(data=new)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
-                return Response({'status': True, 'Sub Array': temp}, status=ok)
+                return Response({'status': True, 'Sub Array': temp}, status=created)
             else:
                 temp.append(int(d))
                 output_total += d
@@ -67,4 +63,4 @@ class Home(APIView):
         serializer = TestSerializer(data=new)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'status': True, 'Sub Array': outputs }, status=ok)
+        return Response({'status': True, 'Sub Array': outputs }, status=created)
