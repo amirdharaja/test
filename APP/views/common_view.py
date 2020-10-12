@@ -59,7 +59,7 @@ class Home(APIView):
 
         new = {
             'testdata': str(list_data),
-            'result': str(temp)
+            'result': str(outputs)
         }
         serializer = TestSerializer(data=new)
         serializer.is_valid(raise_exception=True)
