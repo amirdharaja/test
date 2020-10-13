@@ -3,8 +3,7 @@ from django.db import models
 
 class Test(models.Model):
 
-    testdata = models.CharField(max_length=255)
-    result = models.CharField(max_length=255)
+    testdata = models.TextField(null=False, unique=False)
 
     objects = models.Manager()
 

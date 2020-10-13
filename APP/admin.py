@@ -10,7 +10,6 @@ admin.site.site_title = "Test"
 class TestAdmin(admin.ModelAdmin):
     list_display = (
         'testdata',
-        'result'
     )
     search_fields = ['testdata',]
 

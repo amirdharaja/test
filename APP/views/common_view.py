@@ -8,59 +8,36 @@ from rest_framework.status import (
     HTTP_404_NOT_FOUND as not_found,
 )
 
-from APP.helpers import validate
 from APP.models.Test import Test
 from APP.serializers import (
     TestSerializer,
 )
-
+import json
 
 @permission_classes((AllowAny,))
 class Home(APIView):
 
     def get(self, request):
         test_data = Test.objects.all()
-        test_data = TestSerializer(test_data,  many=True)
-        return Response({'status': True, 'test_data': test_data.data, }, status=ok)
+        test_data = TestSerializer(test_data, many=True)
+        data = []
+        for d in test_data.data:
+            d = (d.testdata).replace("'", '"')
+            d = json.loads(d)
+            data.append(d)
+        if not data:
+            return Response({'status': False, 'detail': 'NO DATA FOUND'}, status=not_found)
+
+        return Response({'status': True, 'test data': data}, status=ok)
 
     def post(self, request):
-        list_data = request.data.get('list')
-        key = request.data.get('key')
+        test_data = request.data.get('test_data')
 
-        is_valid = validate(list_data, key)
-        if not is_valid['status']:
-            return Response(is_valid, status=bad_request)
+        if not test_data or not type(test_data) == dict:
+            return Response({'status': False, 'detail': 'PLEASE GIVE VALID INPUT FORMAT(PYTHON DICTONARY)'}, status=bad_request)
 
-        key, temp, outputs, output_length, output_total = int(key), [], [], len(list_data), 0
-        for d in list_data:
-            if d >= key:
-                temp = []
-                temp.append(d)
-                new = {
-                    'testdata': str(list_data),
-                    'result': str(temp)
-                }
-                serializer = TestSerializer(data=new)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
-                return Response({'status': True, 'Sub Array': temp}, status=created)
-            else:
-                temp.append(int(d))
-                output_total += d
-                if output_total >= key and len(temp) < output_length:
-                    output_length = len(temp)
-                    outputs = temp.copy()
-                    temp = []
-                    output_total = 0
-
-        if not outputs:
-            return Response({'status': False, 'detail': 'SUB ARRAY NOT AVAILABLE'}, status=not_found)
-
-        new = {
-            'testdata': str(list_data),
-            'result': str(outputs)
-        }
+        new = { 'testdata': str(test_data),}
         serializer = TestSerializer(data=new)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'status': True, 'Sub Array': outputs }, status=created)
+        return Response({'status': True, 'detail': 'DICTONARY ACCEPTED AND SAVED INTO DATABASE' ,'data': test_data }, status=created)
