@@ -9,4 +9,8 @@ class TestSerializer(ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instanse):
-        return instanse
+        test_data = super().to_representation(instanse)
+        d = (test_data['testdata']).replace("'", '"')
+        d = json.loads(d)
+        data = {'id':test_data['id'], 'test_data': d}
+        return data

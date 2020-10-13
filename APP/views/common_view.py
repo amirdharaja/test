@@ -20,15 +20,7 @@ class Home(APIView):
     def get(self, request):
         test_data = Test.objects.all()
         test_data = TestSerializer(test_data, many=True)
-        data = []
-        for d in test_data.data:
-            d = (d.testdata).replace("'", '"')
-            d = json.loads(d)
-            data.append(d)
-        if not data:
-            return Response({'status': False, 'detail': 'NO DATA FOUND'}, status=not_found)
-
-        return Response({'status': True, 'test data': data}, status=ok)
+        return Response({'status': True, 'test data': test_data.data}, status=ok)
 
     def post(self, request):
         test_data = request.data.get('test_data')
